@@ -3,6 +3,7 @@ session_start();
 include 'koneksi.php';
 //munculkan / pilih sebuah atau semua kolom dari table user
 $queryUser = mysqli_query($koneksi, "SELECT level.nama_level, user.* FROM user LEFT JOIN level ON level.id = user.id_level ORDER BY id DESC");
+$queryDataTransaksi =mysqli_query($koneksi, "SELECT customer.nama_customer, data_transaksi.* FROM customer LEFT JOIN data_transaksi ON data_transaksi.id_customer = customer.id");
 // mysqli_fetch_assoc = untuk menjadikan hasil query menjadi sebuah data (object)
 
 // jika parameternya ada ?delete=nilai parameter

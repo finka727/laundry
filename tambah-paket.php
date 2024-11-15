@@ -4,27 +4,29 @@ include 'koneksi.php';
 
 // jika button simpan ditekan
 if (isset($_POST['simpan'])) {
-    $nama_level = $_POST['nama_level'];
+    $nama_paket = $_POST['nama_paket'];
+    $harga = $_POST['harga'];
+    $deskripsi = $_POST['deskripsi'];
 
-    $insert = mysqli_query($koneksi, "INSERT INTO level (nama_level) VALUES ('$nama_level')");
 
-    header("location:level.php?tambah=berhasil");
+    $insert = mysqli_query($koneksi, "INSERT INTO paket (nama_paket,harga,deskripsi) VALUES ('$nama_paket','$harga','$deskripsi')");
+
+    header("location:paket.php?tambah=berhasil");
 }
 
 $id = isset($_GET['edit']) ? $_GET['edit'] : '';
-$queryEdit = mysqli_query($koneksi, "SELECT * FROM level WHERE id ='$id'");
+$queryEdit = mysqli_query($koneksi, "SELECT * FROM paket WHERE id ='$id'");
 $rowEdit = mysqli_fetch_assoc($queryEdit);
 
 //jika button edit di klik
 if (isset($_POST['edit'])) {
-    $nama_level = $_POST['nama_level'];
+    $nama_paket = $_POST['nama_paket'];
+    $harga = $_POST['harga'];
+    $deskripsi = $_POST['deskripsi'];
 
-    $update = mysqli_query($koneksi, "UPDATE level SET nama_level='$nama_level' WHERE id='$id'");
-    header("location:level.php?ubah=berhasil");
+    $update = mysqli_query($koneksi, "UPDATE paket SET nama_paket='$nama_paket',harga='$harga',deskripsi='$deskripsi' WHERE id='$id'");
+    header("location:paket.php?ubah=berhasil");
 }
-
-// data level
-$dataLevel = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
 
 ?>
 <!DOCTYPE html>
@@ -87,7 +89,7 @@ $dataLevel = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="card">
-                                    <div class="card-header"><?php echo isset($_GET['edit']) ? 'Edit' : 'Tambah' ?> Level</div>
+                                    <div class="card-header"><?php echo isset($_GET['edit']) ? 'Edit' : 'Tambah' ?> Paket</div>
                                     <div class="card-body">
                                         <?php if (isset($_GET['hapus'])): ?>
                                             <div class="alert alert-success" role="alert">Data berhasil dihapus</div>
@@ -96,12 +98,30 @@ $dataLevel = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
                                         <form action="" method="post" enctype="multipart/form-data">
                                             <div class="mb-3 row">
                                                 <div class="col-sm-6">
-                                                    <label for="" class="form-label">Nama Level</label>
+                                                    <label for="" class="form-label">Nama Paket</label>
                                                     <input type="text"
                                                         class="form-control"
-                                                        name="nama_level"
-                                                        placeholder="Nama Level"
-                                                        value="<?php echo isset($_GET['edit']) ? $rowEdit['nama_level'] : '' ?>"
+                                                        name="nama_paket"
+                                                        placeholder="Nama Paket"
+                                                        value="<?php echo isset($_GET['edit']) ? $rowEdit['nama_paket'] : '' ?>"
+                                                        required>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label for="" class="form-label">Harga</label>
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        name="harga"
+                                                        placeholder="Masukkan Harga"
+                                                        value="<?php echo isset($_GET['edit']) ? $rowEdit['harga'] : '' ?>"
+                                                        required>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label for="" class="form-label">Deskripsi</label>
+                                                    <input type="text"
+                                                        class="form-control"
+                                                        name="deskripsi"
+                                                        placeholder="Masukkan deskripsi"
+                                                        value="<?php echo isset($_GET['edit']) ? $rowEdit['deskripsi'] : '' ?>"
                                                         required>
                                                 </div>
                                             </div>

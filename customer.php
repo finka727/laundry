@@ -1,31 +1,18 @@
 <?php
 session_start();
 include 'koneksi.php';
+//munculkan / pilih sebuah atau semua kolom dari table user
+$queryCustomer = mysqli_query($koneksi, "SELECT * FROM customer ORDER BY id DESC");
+// mysqli_fetch_assoc = untuk menjadikan hasil query menjadi sebuah data (object)
 
-// jika button simpan ditekan
-if (isset($_POST['simpan'])) {
-    $nama_level = $_POST['nama_level'];
+// jika parameternya ada ?delete=nilai parameter
+if (isset($_GET['delete'])) {
+    $id = $_GET['delete']; //mengambil nilai parameter
 
-    $insert = mysqli_query($koneksi, "INSERT INTO level (nama_level) VALUES ('$nama_level')");
-
-    header("location:level.php?tambah=berhasil");
+    //query / perintah hapus
+    $delete = mysqli_query($koneksi, "DELETE FROM customer WHERE id ='$id'");
+    header("location:customer.php?hapus=berhasil");
 }
-
-$id = isset($_GET['edit']) ? $_GET['edit'] : '';
-$queryEdit = mysqli_query($koneksi, "SELECT * FROM level WHERE id ='$id'");
-$rowEdit = mysqli_fetch_assoc($queryEdit);
-
-//jika button edit di klik
-if (isset($_POST['edit'])) {
-    $nama_level = $_POST['nama_level'];
-
-    $update = mysqli_query($koneksi, "UPDATE level SET nama_level='$nama_level' WHERE id='$id'");
-    header("location:level.php?ubah=berhasil");
-}
-
-// data level
-$dataLevel = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
-
 ?>
 <!DOCTYPE html>
 
@@ -87,30 +74,45 @@ $dataLevel = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="card">
-                                    <div class="card-header"><?php echo isset($_GET['edit']) ? 'Edit' : 'Tambah' ?> Level</div>
+                                    <div class="card-header">Data Customer</div>
                                     <div class="card-body">
                                         <?php if (isset($_GET['hapus'])): ?>
                                             <div class="alert alert-success" role="alert">Data berhasil dihapus</div>
                                         <?php endif ?>
-
-                                        <form action="" method="post" enctype="multipart/form-data">
-                                            <div class="mb-3 row">
-                                                <div class="col-sm-6">
-                                                    <label for="" class="form-label">Nama Level</label>
-                                                    <input type="text"
-                                                        class="form-control"
-                                                        name="nama_level"
-                                                        placeholder="Nama Level"
-                                                        value="<?php echo isset($_GET['edit']) ? $rowEdit['nama_level'] : '' ?>"
-                                                        required>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <button class="btn btn-primary" name="<?php echo isset($_GET['edit']) ? 'edit' : 'simpan' ?>" type="submit">
-                                                    Simpan
-                                                </button>
-                                            </div>
-                                        </form>
+                                        <div align="right" class="mb-3">
+                                            <a href="tambah-customer.php" class="btn btn-primary">Tambah</a>
+                                        </div>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Nama Customer</th>
+                                                    <th>Phone</th>
+                                                    <th>Alamat</th>
+                                                    <th>Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php $no = 1;
+                                                while ($rowCustomer = mysqli_fetch_assoc($queryCustomer)) { ?>
+                                                    <tr>
+                                                        <td><?php echo $no++ ?></td>
+                                                        <td><?php echo $rowCustomer['nama_customer'] ?></td>
+                                                        <td><?php echo $rowCustomer['phone'] ?></td>
+                                                        <td><?php echo $rowCustomer['address'] ?></td>
+                                                        <td>
+                                                            <a href="tambah-customer.php?edit=<?php echo $rowCustomer['id'] ?>" class="btn btn-success btn-sm">
+                                                                <span class="tf-icon bx bx-pencil bx-18px "></span>
+                                                            </a>
+                                                            <a onclick="return confirm('apakah anda yakin akan menghapus data ini??')"
+                                                                href="customer.php?delete=<?php echo $rowCustomer['id'] ?>" class="btn btn-danger btn-sm">
+                                                                <span class="tf-icon bx bx-trash bx-18px "></span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

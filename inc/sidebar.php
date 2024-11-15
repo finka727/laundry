@@ -69,7 +69,7 @@
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
             <li class="menu-item active">
-              <a href="index.html" class="menu-link">
+              <a href="index.php" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Dashboard</div>
               </a>
@@ -97,12 +97,12 @@
                   </a>
                 </li>
                 <li class="menu-item">
-                  <a href="pages-account-settings-notifications.html" class="menu-link">
+                  <a href="customer.php" class="menu-link">
                     <div data-i18n="Notifications">Customer</div>
                   </a>
                 </li>
                 <li class="menu-item">
-                  <a href="pages-account-settings-connections.html" class="menu-link">
+                  <a href="paket.php" class="menu-link">
                     <div data-i18n="Connections">Paket</div>
                   </a>
                 </li>
@@ -117,17 +117,17 @@
               </a>
               <ul class="menu-sub">
                 <li class="menu-item">
-                  <a href="instruktur.php" class="menu-link" target="_blank">
+                  <a href="data-transaksi.php" class="menu-link">
                     <div data-i18n="Basic">Data Transaksi</div>
                   </a>
                 </li>
                 <li class="menu-item">
-                  <a href="auth-register-basic.html" class="menu-link" target="_blank">
+                  <a href="auth-register-basic.html" class="menu-link">
                     <div data-i18n="Basic">Transaksi Pengembalian</div>
                   </a>
                 </li>
                 <li class="menu-item">
-                  <a href="auth-forgot-password-basic.html" class="menu-link" target="_blank">
+                  <a href="auth-forgot-password-basic.html" class="menu-link">
                     <div data-i18n="Basic">Laporan Transaksi</div>
                   </a>
                 </li>

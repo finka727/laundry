@@ -4,27 +4,32 @@ include 'koneksi.php';
 
 // jika button simpan ditekan
 if (isset($_POST['simpan'])) {
-    $nama_level = $_POST['nama_level'];
+    $nama_customer = $_POST['nama_customer'];
+    $phone = $_POST['phone'];
+    $address = $_POST['address'];
+    
 
-    $insert = mysqli_query($koneksi, "INSERT INTO level (nama_level) VALUES ('$nama_level')");
+    $insert = mysqli_query($koneksi, "INSERT INTO customer (nama_customer,phone,address) VALUES ('$nama_customer','$phone','$address')");
 
-    header("location:level.php?tambah=berhasil");
+    header("location:customer.php?tambah=berhasil");
 }
 
 $id = isset($_GET['edit']) ? $_GET['edit'] : '';
-$queryEdit = mysqli_query($koneksi, "SELECT * FROM level WHERE id ='$id'");
+$queryEdit = mysqli_query($koneksi, "SELECT * FROM customer WHERE id ='$id'");
 $rowEdit = mysqli_fetch_assoc($queryEdit);
 
 //jika button edit di klik
 if (isset($_POST['edit'])) {
-    $nama_level = $_POST['nama_level'];
+    $nama_customer = $_POST['nama_customer'];
+    $phone = $_POST['phone'];
+    $address = $_POST['address'];
 
-    $update = mysqli_query($koneksi, "UPDATE level SET nama_level='$nama_level' WHERE id='$id'");
-    header("location:level.php?ubah=berhasil");
+    $update = mysqli_query($koneksi, "UPDATE customer SET nama_customer='$nama_customer',phone='$phone',address='$address' WHERE id='$id'");
+    header("location:customer.php?ubah=berhasil");
 }
 
 // data level
-$dataLevel = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
+// $dataLevel = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
 
 ?>
 <!DOCTYPE html>
@@ -87,7 +92,7 @@ $dataLevel = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="card">
-                                    <div class="card-header"><?php echo isset($_GET['edit']) ? 'Edit' : 'Tambah' ?> Level</div>
+                                    <div class="card-header"><?php echo isset($_GET['edit']) ? 'Edit' : 'Tambah' ?> Customer</div>
                                     <div class="card-body">
                                         <?php if (isset($_GET['hapus'])): ?>
                                             <div class="alert alert-success" role="alert">Data berhasil dihapus</div>
@@ -96,12 +101,30 @@ $dataLevel = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
                                         <form action="" method="post" enctype="multipart/form-data">
                                             <div class="mb-3 row">
                                                 <div class="col-sm-6">
-                                                    <label for="" class="form-label">Nama Level</label>
+                                                    <label for="" class="form-label">Nama Customer</label>
                                                     <input type="text"
                                                         class="form-control"
-                                                        name="nama_level"
-                                                        placeholder="Nama Level"
-                                                        value="<?php echo isset($_GET['edit']) ? $rowEdit['nama_level'] : '' ?>"
+                                                        name="nama_customer"
+                                                        placeholder="Masukkan Nama Customer Anda"
+                                                        value="<?php echo isset($_GET['edit']) ? $rowEdit['nama_customer'] : '' ?>"
+                                                        required>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label for="" class="form-label">Phone</label>
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        name="phone"
+                                                        placeholder="Masukkan Nomor Telephone Anda"
+                                                        value="<?php echo isset($_GET['edit']) ? $rowEdit['phone'] : '' ?>"
+                                                        required>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label for="" class="form-label">Alamat</label>
+                                                    <input type="text"
+                                                        class="form-control"
+                                                        name="address"
+                                                        placeholder="Masukkan Alamat Anda"
+                                                        value="<?php echo isset($_GET['edit']) ? $rowEdit['address'] : '' ?>"
                                                         required>
                                                 </div>
                                             </div>
