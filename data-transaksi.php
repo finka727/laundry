@@ -101,10 +101,27 @@ if (isset($_GET['delete'])) {
                                                         <td><?php echo $rowDataTransaksi['kode_order'] ?></td>
                                                         <td><?php echo $rowDataTransaksi['nama_customer'] ?></td>
                                                         <td><?php echo $rowDataTransaksi['tanggal_order'] ?></td>
-                                                        <td><?php echo $rowDataTransaksi['status_order'] ?></td>
                                                         <td>
-                                                            <a href="tambah-data-transaksi.php?print=<?php echo $rowDataTransaksi['id'] ?>" class="btn btn-success btn-sm">
-                                                                <span class="tf-icon bx bx-print bx-18px "></span>
+                                                            <?php 
+                                                            switch ($rowDataTransaksi['status_order']) {
+                                                                case '1':
+                                                                    $badge = "<span class='badge bg-success'>Sudah dikembalikan</span>";
+                                                                    break;
+                                                                
+                                                                default:
+                                                                    $badge="<span class='badge bg-warning'>Baru</span>";
+                                                                    break;
+                                                            }
+
+                                                            echo $badge;
+                                                            ?>
+                                                        </td>
+                                                        <td>
+                                                            <a href="tambah-data-transaksi.php?detail=<?php echo $rowDataTransaksi['id'] ?>" class="btn btn-primary btn-sm">
+                                                                <span class="tf-icon bx bx-show bx-18px "></span>
+                                                            </a>
+                                                            <a target="_blank" href="print.php?id=<?php echo $rowDataTransaksi['id'] ?>" class="btn btn-success btn-sm">
+                                                                <span class="tf-icon bx bx-printer bx-18px "></span>
                                                             </a>
                                                             <a onclick="return confirm('apakah anda yakin akan menghapus data ini??')"
                                                                 href="data-transaksi.php?delete=<?php echo $rowDataTransaksi['id'] ?>" class="btn btn-danger btn-sm">

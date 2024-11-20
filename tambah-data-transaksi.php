@@ -2,23 +2,50 @@
 session_start();
 include 'koneksi.php';
 $dataCustomer = mysqli_query($koneksi, "SELECT * FROM customer ORDER BY id DESC");
+$id = isset($_GET['detail']) ? $_GET['detail'] : '';
+$queryDetailTransaksi = mysqli_query($koneksi, "SELECT customer.nama_customer, customer.phone, customer.address, data_transaksi.kode_order, data_transaksi.tanggal_order, data_transaksi.status_order, paket.nama_paket, paket.harga, transaksi_detail.* FROM transaksi_detail LEFT JOIN paket ON paket.id = transaksi_detail.id_paket LEFT JOIN data_transaksi ON data_transaksi.id = transaksi_detail.id_order LEFT JOIN customer ON data_transaksi.id_customer = customer.id WHERE transaksi_detail.id_order='$id'");
+$row = [];
+while ($data = mysqli_fetch_assoc($queryDetailTransaksi)) {
+    $row[] = $data;
+}
+
 $dataPaket = mysqli_query($koneksi, "SELECT * FROM paket ORDER BY id DESC");
-$rowPaket = [];
+$rowPaket =[];
 while ($data = mysqli_fetch_assoc($dataPaket)) {
     $rowPaket[] = $data;
 }
-
 // jika button simpan ditekan
 if (isset($_POST['simpan'])) {
     $id_customer = $_POST['id_customer'];
     $kode_order = $_POST['kode_order'];
     $tanggal_order = $_POST['tanggal_order'];
-    $status_order = $_POST['status_order'];
 
+    $id_paket = $_POST['id_paket'];
 
-    $insert = mysqli_query($koneksi, "INSERT INTO data_transaksi (id_customer,kode_order,tanggal_order,status_order) VALUES ('$id_customer','$kode_order','$tanggal_order','$status_order')");
+    // insert ke table data transaksi 
+    $insertDataTransaksi = mysqli_query($koneksi, "INSERT INTO data_transaksi (id_customer, kode_order, tanggal_order) VALUES ('$id_customer','$kode_order','$tanggal_order')");
 
-    header("location:data-transaksi.php?tambah=berhasil");
+    $last_id = mysqli_insert_id($koneksi);
+    // insert ke table detail transaksi
+    // mengambil nilai lebih dari satu, looping dengan foreach
+    foreach($id_paket as $key => $value){
+            $id_paket = array_filter($_POST['id_paket']);
+            $qty = array_filter($_POST['qty']);
+            $id_paket = $_POST['id_paket'][$key];
+            $qty = $_POST['qty'][$key];
+    
+            // query untuk mengambil harga dari table paket 
+            $queryTransaksiDetail = mysqli_query($koneksi, "SELECT id, harga FROM paket WHERE id='$id_paket'");
+            $rowTransaksiDetail = mysqli_fetch_assoc($queryTransaksiDetail);
+            $harga = isset($rowTransaksiDetail['harga']) ? $rowTransaksiDetail['harga'] : '';
+            // sub total 
+            $subTotal =(int)$qty * (int)$harga;
+
+            if ($id_paket >0) {
+                $insertDetailTransaksi = mysqli_query($koneksi, "INSERT INTO transaksi_detail (id_order, id_paket, qty, subTotal) VALUES ('$last_id','$id_paket','$qty','$subTotal')"); 
+            }
+        }
+        header("location:data-transaksi.php?tambah=berhasil");
 }
 
 $id = isset($_GET['edit']) ? $_GET['edit'] : '';
@@ -36,13 +63,21 @@ if (isset($_POST['edit'])) {
     header("location:data-transaksi.php?ubah=berhasil");
 }
 
-
-function generateTransactionCode()
-{
-    $kode = date('ymdHis');
-
-    return $kode;
+// no invoice code
+// 001, jika ada auto increment id + 1 = 002, selain itu 001
+// MAX : terbesar MIN: terkecil
+$queryInvoice = mysqli_query($koneksi, "SELECT MAX(id) AS kode_order FROM data_transaksi");
+// jika di dalam table data transaksi ada datanya
+$str_unique = "INV";
+$date_now = date("dmY");
+if (mysqli_num_rows($queryInvoice) >0) {
+    $rowInvoice = mysqli_fetch_assoc($queryInvoice);
+    $incrementPlus = $rowInvoice['kode_order'] + 1;
+    $code = $str_unique . "" . $date_now . "" . "000" . $incrementPlus;
+}else {
+    $code = $str_unique . "" . $date_now . "" . "0001";
 }
+
 
 ?>
 <!DOCTYPE html>
@@ -100,8 +135,94 @@ function generateTransactionCode()
                 <!-- Content wrapper -->
                 <div class="content-wrapper">
                     <!-- Content -->
+                    <?php if(isset($_GET['detail'])): ?>
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        <div class="row">
+                            <div class="col-sm-12 mb-3"></div>
+                            <div class="col-sm-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Data Transaksi</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-bordered table-striped">
+                                            <tr>
+                                                <th>Kode Order</th>
+                                                <td><?php echo $row[0]['kode_order'] ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Tanggal Order</th>
+                                                <td><?php echo $row[0]['tanggal_order'] ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status</th>
+                                                <td><?php echo $row[0]['status_order'] ?></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Data Customer</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-bordered table-striped">
+                                            <tr>
+                                                <th>Nama</th>
+                                                <td><?php echo $row[0]['nama_customer'] ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>No.Telp</th>
+                                                <td><?php echo $row[0]['phone'] ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Alamat</th>
+                                                <td><?php echo $row[0]['address'] ?></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 mt-2">
+                                 <div class="card">
+                                    <div class="card-header">
+                                        <h5>Transaksi Detail</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Paket</th>
+                                                <th>Qty</th>
+                                                <th>Harga</th>
+                                                <th>Subtotal</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php $no=1; foreach($row as $key => $value): ?>
+                                                <tr>
+                                                    <td><?php echo $no++ ?></td>
+                                                    <td><?php echo $value['nama_paket'] ?></td>
+                                                    <td><?php echo $value['qty'] ?></td>
+                                                    <td><?php echo $value['harga'] ?></td>
+                                                    <td><?php echo $value['subtotal'] ?></td>
+                                                </tr>
+                                                <?php endforeach ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php else: ?>
 
                     <div class="container-xxl flex-grow-1 container-p-y">
+                        <form action="" method="post" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="card">
@@ -111,7 +232,6 @@ function generateTransactionCode()
                                             <div class="alert alert-success" role="alert">Data berhasil dihapus</div>
                                         <?php endif ?>
 
-                                        <form action="" method="post" enctype="multipart/form-data">
                                             <div class="mb-3 row">
                                                 <div class="col-sm-6">
                                                     <label for="" class="form-label">Nama Customer</label>
@@ -129,7 +249,7 @@ function generateTransactionCode()
                                                     <input type="text"
                                                         class="form-control"
                                                         name="kode_order"
-                                                        value="<?php echo "#" . generateTransactionCode() ?>"
+                                                        value="#<?php echo $code ?>"
                                                         readonly>
                                                 </div>
                                                 <div class="col-sm-6">
@@ -142,12 +262,6 @@ function generateTransactionCode()
                                                         required>
                                                 </div>
                                             </div>
-                                            <div class="mb-3">
-                                                <button class="btn btn-primary" name="<?php echo isset($_GET['edit']) ? 'edit' : 'simpan' ?>" type="submit">
-                                                    Simpan
-                                                </button>
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -160,7 +274,6 @@ function generateTransactionCode()
                                             <div class="alert alert-success" role="alert">Data berhasil dihapus</div>
                                         <?php endif ?>
 
-                                        <form action="" method="post" enctype="multipart/form-data">
                                             <div class="mb-3 row">
                                                 <div class="col-sm-3">
                                                     <label for="" class="form-label">Paket</label>
@@ -208,12 +321,14 @@ function generateTransactionCode()
                                                     Simpan
                                                 </button>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                         </div>
+                        </form>
                     </div>
+
+                    <?php endif ?>
                     <!-- / Content -->
 
                     <!-- Footer -->

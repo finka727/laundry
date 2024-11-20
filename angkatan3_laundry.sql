@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 15 Nov 2024 pada 09.53
+-- Waktu pembuatan: 20 Nov 2024 pada 09.50
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -60,6 +60,14 @@ CREATE TABLE `data_transaksi` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `data_transaksi`
+--
+
+INSERT INTO `data_transaksi` (`id`, `id_customer`, `kode_order`, `tanggal_order`, `status_order`, `created_at`, `updated_at`) VALUES
+(16, 1, '#INV201120240001', '2024-11-20', 0, '2024-11-20 03:35:34', '2024-11-20 03:35:34'),
+(18, 3, '#INV2011202400017', '2024-11-20', 0, '2024-11-20 04:55:48', '2024-11-20 04:55:48');
 
 -- --------------------------------------------------------
 
@@ -125,6 +133,15 @@ CREATE TABLE `transaksi_detail` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data untuk tabel `transaksi_detail`
+--
+
+INSERT INTO `transaksi_detail` (`id`, `id_order`, `id_paket`, `qty`, `subtotal`, `catatan`, `created_at`, `updated_at`) VALUES
+(16, 16, 3, 1, 5000, '', '2024-11-20 03:35:34', '2024-11-20 03:35:34'),
+(19, 18, 3, 2, 10000, '', '2024-11-20 04:55:48', '2024-11-20 04:55:48'),
+(20, 18, 2, 2, 9000, '', '2024-11-20 04:55:48', '2024-11-20 04:55:48');
+
 -- --------------------------------------------------------
 
 --
@@ -164,7 +181,8 @@ ALTER TABLE `customer`
 -- Indeks untuk tabel `data_transaksi`
 --
 ALTER TABLE `data_transaksi`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `data_transaksi_ibfk_1` (`id_customer`);
 
 --
 -- Indeks untuk tabel `level`
@@ -182,7 +200,9 @@ ALTER TABLE `paket`
 -- Indeks untuk tabel `transaksi_detail`
 --
 ALTER TABLE `transaksi_detail`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `transaksi_detail_ibfk_1` (`id_order`),
+  ADD KEY `id_paket` (`id_paket`);
 
 --
 -- Indeks untuk tabel `user`
@@ -205,7 +225,7 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT untuk tabel `data_transaksi`
 --
 ALTER TABLE `data_transaksi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT untuk tabel `level`
@@ -223,7 +243,7 @@ ALTER TABLE `paket`
 -- AUTO_INCREMENT untuk tabel `transaksi_detail`
 --
 ALTER TABLE `transaksi_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT untuk tabel `user`
@@ -234,6 +254,19 @@ ALTER TABLE `user`
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
+
+--
+-- Ketidakleluasaan untuk tabel `data_transaksi`
+--
+ALTER TABLE `data_transaksi`
+  ADD CONSTRAINT `data_transaksi_ibfk_1` FOREIGN KEY (`id_customer`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `transaksi_detail`
+--
+ALTER TABLE `transaksi_detail`
+  ADD CONSTRAINT `transaksi_detail_ibfk_1` FOREIGN KEY (`id_order`) REFERENCES `data_transaksi` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `transaksi_detail_ibfk_2` FOREIGN KEY (`id_paket`) REFERENCES `paket` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ketidakleluasaan untuk tabel `user`
