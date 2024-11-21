@@ -48,21 +48,6 @@ if (isset($_POST['simpan'])) {
         header("location:data-transaksi.php?tambah=berhasil");
 }
 
-$id = isset($_GET['edit']) ? $_GET['edit'] : '';
-$queryDataTransaksi = mysqli_query($koneksi, "SELECT * FROM data_transaksi WHERE id ='$id'");
-$rowDataTransaksi = mysqli_fetch_assoc($queryDataTransaksi);
-
-//jika button edit di klik
-if (isset($_POST['edit'])) {
-    $id_customer = $_POST['id_customer'];
-    $kode_order = $_POST['kode_order'];
-    $tanggal_order = $_POST['tanggal_order'];
-    $status_order = $_POST['status_order'];
-
-    $update = mysqli_query($koneksi, "UPDATE data_transaksi SET id_customer='$id_customer',kode_order='$kode_order',tanggal_order='$tanggal_order',status_order='$status_order' WHERE id='$id'");
-    header("location:data-transaksi.php?ubah=berhasil");
-}
-
 // no invoice code
 // 001, jika ada auto increment id + 1 = 002, selain itu 001
 // MAX : terbesar MIN: terkecil
@@ -138,12 +123,30 @@ if (mysqli_num_rows($queryInvoice) >0) {
                     <?php if(isset($_GET['detail'])): ?>
                     <div class="container-xxl flex-grow-1 container-p-y">
                         <div class="row">
-                            <div class="col-sm-12 mb-3"></div>
+                            <div class="col-sm-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <h5>Transaksi Laundry <?php echo $row[0]['nama_customer'] ?></h5>
+                                            </div>
+                                            <div class="col-sm-6" align="right">
+                                                <a href="data-transaksi.php" class="btn btn-secondary">Kembali</a>
+                                                <a href="print.php?id=<?php echo $row[0]['id_order'] ?>" class="btn btn-success">Print</a>
+                                                <?php if ($row[0]['status_order'] == 0): ?>
+                                                <a href="tambah-transaksi-pengambilan.php?ambil=<?php echo $row[0]['id_order'] ?>" class="btn btn-warning">Ambil Cucian</a>
+                                                <?php endif ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-sm-6">
                                 <div class="card">
                                     <div class="card-header">
                                         <h5>Data Transaksi</h5>
                                     </div>
+                                    <?php include 'helper.php' ?>
                                     <div class="card-body">
                                         <table class="table table-bordered table-striped">
                                             <tr>
@@ -156,7 +159,7 @@ if (mysqli_num_rows($queryInvoice) >0) {
                                             </tr>
                                             <tr>
                                                 <th>Status</th>
-                                                <td><?php echo $row[0]['status_order'] ?></td>
+                                                <td><?php echo changeStatus($row[0]['status_order']) ?></td>
                                             </tr>
                                         </table>
                                     </div>
