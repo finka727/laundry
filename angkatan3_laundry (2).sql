@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 20 Nov 2024 pada 09.50
+-- Waktu pembuatan: 21 Nov 2024 pada 09.52
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -55,7 +55,7 @@ CREATE TABLE `data_transaksi` (
   `id` int(11) NOT NULL,
   `id_customer` int(11) NOT NULL,
   `kode_order` varchar(50) NOT NULL,
-  `tanggal_order` date NOT NULL,
+  `tanggal_order` datetime NOT NULL,
   `status_order` tinyint(4) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -66,8 +66,10 @@ CREATE TABLE `data_transaksi` (
 --
 
 INSERT INTO `data_transaksi` (`id`, `id_customer`, `kode_order`, `tanggal_order`, `status_order`, `created_at`, `updated_at`) VALUES
-(16, 1, '#INV201120240001', '2024-11-20', 0, '2024-11-20 03:35:34', '2024-11-20 03:35:34'),
-(18, 3, '#INV2011202400017', '2024-11-20', 0, '2024-11-20 04:55:48', '2024-11-20 04:55:48');
+(18, 3, '#INV2011202400017', '2024-11-20 00:00:00', 1, '2024-11-20 04:55:48', '2024-11-21 04:27:36'),
+(20, 3, '#INV2111202400019', '2024-11-14 00:00:00', 1, '2024-11-21 04:40:08', '2024-11-21 06:49:35'),
+(21, 2, '#INV2111202400021', '2024-11-20 00:00:00', 0, '2024-11-21 04:42:34', '2024-11-21 04:42:34'),
+(22, 2, '#INV2111202400022', '2024-11-13 00:00:00', 0, '2024-11-21 07:48:20', '2024-11-21 07:48:20');
 
 -- --------------------------------------------------------
 
@@ -138,9 +140,40 @@ CREATE TABLE `transaksi_detail` (
 --
 
 INSERT INTO `transaksi_detail` (`id`, `id_order`, `id_paket`, `qty`, `subtotal`, `catatan`, `created_at`, `updated_at`) VALUES
-(16, 16, 3, 1, 5000, '', '2024-11-20 03:35:34', '2024-11-20 03:35:34'),
 (19, 18, 3, 2, 10000, '', '2024-11-20 04:55:48', '2024-11-20 04:55:48'),
-(20, 18, 2, 2, 9000, '', '2024-11-20 04:55:48', '2024-11-20 04:55:48');
+(20, 18, 2, 2, 9000, '', '2024-11-20 04:55:48', '2024-11-20 04:55:48'),
+(23, 20, 3, 2, 10000, '', '2024-11-21 04:40:08', '2024-11-21 04:40:08'),
+(24, 20, 2, 3, 13500, '', '2024-11-21 04:40:08', '2024-11-21 04:40:08'),
+(25, 21, 1, 2, 10000, '', '2024-11-21 04:42:34', '2024-11-21 04:42:34'),
+(26, 21, 2, 3, 13500, '', '2024-11-21 04:42:34', '2024-11-21 04:42:34'),
+(27, 22, 3, 2, 10000, '', '2024-11-21 07:48:20', '2024-11-21 07:48:20'),
+(28, 22, 2, 1, 4500, '', '2024-11-21 07:48:20', '2024-11-21 07:48:20');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `transaksi_pengambilan`
+--
+
+CREATE TABLE `transaksi_pengambilan` (
+  `id` int(11) NOT NULL,
+  `id_order` int(11) NOT NULL,
+  `id_customer` int(11) NOT NULL,
+  `pickup_date` date NOT NULL,
+  `pickup_pay` double(10,2) NOT NULL,
+  `pickup_change` double(10,2) NOT NULL,
+  `note` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `transaksi_pengambilan`
+--
+
+INSERT INTO `transaksi_pengambilan` (`id`, `id_order`, `id_customer`, `pickup_date`, `pickup_pay`, `pickup_change`, `note`, `created_at`, `updated_at`) VALUES
+(3, 18, 3, '2024-11-21', 20000.00, 1000.00, '', '2024-11-21 04:27:36', '2024-11-21 04:27:36'),
+(4, 20, 3, '2024-11-21', 50000.00, 26500.00, '', '2024-11-21 06:49:35', '2024-11-21 06:49:35');
 
 -- --------------------------------------------------------
 
@@ -205,6 +238,12 @@ ALTER TABLE `transaksi_detail`
   ADD KEY `id_paket` (`id_paket`);
 
 --
+-- Indeks untuk tabel `transaksi_pengambilan`
+--
+ALTER TABLE `transaksi_pengambilan`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `user`
 --
 ALTER TABLE `user`
@@ -225,7 +264,7 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT untuk tabel `data_transaksi`
 --
 ALTER TABLE `data_transaksi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT untuk tabel `level`
@@ -243,7 +282,13 @@ ALTER TABLE `paket`
 -- AUTO_INCREMENT untuk tabel `transaksi_detail`
 --
 ALTER TABLE `transaksi_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+--
+-- AUTO_INCREMENT untuk tabel `transaksi_pengambilan`
+--
+ALTER TABLE `transaksi_pengambilan`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `user`
